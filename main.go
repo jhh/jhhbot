@@ -65,20 +65,14 @@ type logger struct {
 }
 
 func (l *logger) Fatal(args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriEmerg, "%s", msg(args...)); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriEmerg, "%s", args...) {
 		os.Exit(1)
 	}
 	l.log.Fatal(args...)
 }
 
 func (l *logger) Fatalf(format string, args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriEmerg, format, args...); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriEmerg, format, args...) {
 		os.Exit(1)
 	}
 	l.log.Fatalf(format, args...)
@@ -93,100 +87,70 @@ func (l *logger) Panicf(format string, args ...interface{}) {
 }
 
 func (l *logger) Critical(args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriCrit, "%s", msg(args...)); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriCrit, "%s", args...) {
 		return
 	}
 	l.log.Error(args...)
 }
 
 func (l *logger) Criticalf(format string, args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriCrit, format, args...); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriCrit, format, args...) {
 		return
 	}
 	l.log.Errorf(format, args...)
 }
 
 func (l *logger) Error(args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriErr, "%s", msg(args...)); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriErr, "%s", args...) {
 		return
 	}
 	l.log.Error(args...)
 }
 
 func (l *logger) Errorf(format string, args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriErr, format, args...); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriErr, format, args...) {
 		return
 	}
 	l.log.Errorf(format, args...)
 }
 
 func (l *logger) Warning(args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriWarning, "%s", msg(args...)); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriWarning, "%s", args...) {
 		return
 	}
 	l.log.Warn(args...)
 }
 
 func (l *logger) Warningf(format string, args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriWarning, format, args...); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriWarning, format, args...) {
 		return
 	}
 	l.log.Warnf(format, args...)
 }
 
 func (l *logger) Notice(args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriNotice, "%s", msg(args...)); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriNotice, "%s", args...) {
 		return
 	}
 	l.log.Info(args...)
 }
 
 func (l *logger) Noticef(format string, args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriNotice, format, args...); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriNotice, format, args...) {
 		return
 	}
 	l.log.Infof(format, args...)
 }
 
 func (l *logger) Info(args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriInfo, "%s", msg(args...)); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriInfo, "%s", args...) {
 		return
 	}
 	l.log.Info(args...)
 }
 
 func (l *logger) Infof(format string, args ...interface{}) {
-	if journal.Enabled() {
-		if err := journal.Print(journal.PriInfo, format, args...); err != nil {
-			l.log.Errorf("error printing to systemd journal: %v", err)
-		}
+	if l.doJournal(journal.PriInfo, format, args...) {
 		return
 	}
 	l.log.Infof(format, args...)
@@ -213,4 +177,14 @@ func msg(a ...interface{}) string {
 		prevString = isString
 	}
 	return msg
+}
+
+func (l *logger) doJournal(pri journal.Priority, format string, args ...interface{}) bool {
+	if !journal.Enabled() {
+		return false
+	}
+	if err := journal.Print(pri, format, args...); err != nil {
+		l.log.Errorf("error printing to systemd journal: %v", err)
+	}
+	return true
 }
