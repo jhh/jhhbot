@@ -1,0 +1,16 @@
+[Unit]
+Description=jhhbot Twitter Bot
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/jhhbot
+Restart=on-abort
+
+Environment=TWITTER_CONSUMER_KEY=<redacted>
+Environment=TWITTER_CONSUMER_SECRET=<redacted>
+Environment=TWITTER_ACCESS_TOKEN=<redacted>
+Environment=TWITTER_ACCESS_TOKEN_SECRET=<redacted>
+
+[Install]
+WantedBy=multi-user.target
