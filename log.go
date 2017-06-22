@@ -9,13 +9,13 @@ import (
 	"github.com/coreos/go-systemd/journal"
 )
 
-// Logger logs messages to systemd journal if available, otherwise to STDOUT.
-type Logger struct {
+// logger logs messages to systemd journal if available, otherwise to STDOUT.
+type logger struct {
 	log *logrus.Logger
 }
 
 // Fatal logs messages at log level Fatal and exits.
-func (l *Logger) Fatal(args ...interface{}) {
+func (l *logger) Fatal(args ...interface{}) {
 	if l.doJournal(journal.PriEmerg, "%s", args...) {
 		os.Exit(1)
 	}
@@ -23,7 +23,7 @@ func (l *Logger) Fatal(args ...interface{}) {
 }
 
 // Fatalf logs messages at log level Fatal and exits.
-func (l *Logger) Fatalf(format string, args ...interface{}) {
+func (l *logger) Fatalf(format string, args ...interface{}) {
 	if l.doJournal(journal.PriEmerg, format, args...) {
 		os.Exit(1)
 	}
@@ -31,17 +31,17 @@ func (l *Logger) Fatalf(format string, args ...interface{}) {
 }
 
 // Panic logs messages at log level Panic and panics.
-func (l *Logger) Panic(args ...interface{}) {
+func (l *logger) Panic(args ...interface{}) {
 	l.log.Panic(args...)
 }
 
 // Panicf logs messages at log level Panic and panics.
-func (l *Logger) Panicf(format string, args ...interface{}) {
+func (l *logger) Panicf(format string, args ...interface{}) {
 	l.log.Panicf(format, args...)
 }
 
 // Critical logs messages at log level Critical.
-func (l *Logger) Critical(args ...interface{}) {
+func (l *logger) Critical(args ...interface{}) {
 	if l.doJournal(journal.PriCrit, "%s", args...) {
 		return
 	}
@@ -49,7 +49,7 @@ func (l *Logger) Critical(args ...interface{}) {
 }
 
 // Criticalf logs messages at log level Critical.
-func (l *Logger) Criticalf(format string, args ...interface{}) {
+func (l *logger) Criticalf(format string, args ...interface{}) {
 	if l.doJournal(journal.PriCrit, format, args...) {
 		return
 	}
@@ -57,7 +57,7 @@ func (l *Logger) Criticalf(format string, args ...interface{}) {
 }
 
 // Error logs messages at log level Error.
-func (l *Logger) Error(args ...interface{}) {
+func (l *logger) Error(args ...interface{}) {
 	if l.doJournal(journal.PriErr, "%s", args...) {
 		return
 	}
@@ -65,7 +65,7 @@ func (l *Logger) Error(args ...interface{}) {
 }
 
 // Errorf logs messages at log level Error.
-func (l *Logger) Errorf(format string, args ...interface{}) {
+func (l *logger) Errorf(format string, args ...interface{}) {
 	if l.doJournal(journal.PriErr, format, args...) {
 		return
 	}
@@ -73,7 +73,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 }
 
 // Warning logs messages at log level Warning.
-func (l *Logger) Warning(args ...interface{}) {
+func (l *logger) Warning(args ...interface{}) {
 	if l.doJournal(journal.PriWarning, "%s", args...) {
 		return
 	}
@@ -81,7 +81,7 @@ func (l *Logger) Warning(args ...interface{}) {
 }
 
 // Warningf logs messages at log level Warning.
-func (l *Logger) Warningf(format string, args ...interface{}) {
+func (l *logger) Warningf(format string, args ...interface{}) {
 	if l.doJournal(journal.PriWarning, format, args...) {
 		return
 	}
@@ -89,7 +89,7 @@ func (l *Logger) Warningf(format string, args ...interface{}) {
 }
 
 // Notice logs messages at log level Notice.
-func (l *Logger) Notice(args ...interface{}) {
+func (l *logger) Notice(args ...interface{}) {
 	if l.doJournal(journal.PriNotice, "%s", args...) {
 		return
 	}
@@ -97,7 +97,7 @@ func (l *Logger) Notice(args ...interface{}) {
 }
 
 // Noticef logs messages at log level Notice.
-func (l *Logger) Noticef(format string, args ...interface{}) {
+func (l *logger) Noticef(format string, args ...interface{}) {
 	if l.doJournal(journal.PriNotice, format, args...) {
 		return
 	}
@@ -105,7 +105,7 @@ func (l *Logger) Noticef(format string, args ...interface{}) {
 }
 
 // Info logs messages at log level Info.
-func (l *Logger) Info(args ...interface{}) {
+func (l *logger) Info(args ...interface{}) {
 	if l.doJournal(journal.PriInfo, "%s", args...) {
 		return
 	}
@@ -113,7 +113,7 @@ func (l *Logger) Info(args ...interface{}) {
 }
 
 // Infof logs messages at log level Info.
-func (l *Logger) Infof(format string, args ...interface{}) {
+func (l *logger) Infof(format string, args ...interface{}) {
 	if l.doJournal(journal.PriInfo, format, args...) {
 		return
 	}
@@ -121,12 +121,12 @@ func (l *Logger) Infof(format string, args ...interface{}) {
 }
 
 // Debug logs messages at log level Debug. It will not log to systemd journal.
-func (l *Logger) Debug(args ...interface{}) {
+func (l *logger) Debug(args ...interface{}) {
 	l.log.Debug(args...)
 }
 
 // Debugf logs messages at log level Debug. It will not log to systemd journal.
-func (l *Logger) Debugf(format string, args ...interface{}) {
+func (l *logger) Debugf(format string, args ...interface{}) {
 	l.log.Debugf(format, args...)
 }
 
@@ -145,7 +145,7 @@ func msg(a ...interface{}) string {
 	return msg
 }
 
-func (l *Logger) doJournal(pri journal.Priority, format string, args ...interface{}) bool {
+func (l *logger) doJournal(pri journal.Priority, format string, args ...interface{}) bool {
 	if !journal.Enabled() {
 		return false
 	}

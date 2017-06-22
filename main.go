@@ -13,7 +13,7 @@ var (
 	consumerKeySecret = getenv("TWITTER_CONSUMER_SECRET")
 	accessToken       = getenv("TWITTER_ACCESS_TOKEN")
 	accessTokenSecret = getenv("TWITTER_ACCESS_TOKEN_SECRET")
-	log               = &Logger{logrus.New()}
+	log               = &logger{logrus.New()}
 )
 
 func getenv(key string) string {
