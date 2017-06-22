@@ -54,4 +54,5 @@ func main() {
 		}
 		log.Noticef("retweeted %d", t.Id)
 	}
+	log.Fatal("stream was not opened")
 }

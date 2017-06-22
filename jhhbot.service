@@ -5,7 +5,8 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/usr/local/sbin/jhhbot
-Restart=on-abort
+Restart=on-failure
+RestartSec=1s
 
 Environment=TWITTER_CONSUMER_KEY=<redacted>
 Environment=TWITTER_CONSUMER_SECRET=<redacted>
