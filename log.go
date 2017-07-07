@@ -5,8 +5,8 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/coreos/go-systemd/journal"
+	"github.com/sirupsen/logrus"
 )
 
 // logger logs messages to systemd journal if available, otherwise to STDOUT.
